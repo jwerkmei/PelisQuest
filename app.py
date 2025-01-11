@@ -9,6 +9,7 @@ from forms import ProfileForm, SignUpForm, LoginForm
 from flask_wtf.csrf import CSRFProtect
 from os import getenv
 import json
+import re
 from bot import search_movie_or_tv_show, where_to_watch, search_company
 from flask_login import LoginManager, login_required, login_user, current_user, logout_user
 from flask_bcrypt import Bcrypt
@@ -179,9 +180,16 @@ def chat():
     accept_header = request.headers.get('Accept')
     if accept_header and 'application/json' in accept_header:
         last_message = user.messages[-1]
+        
+        # Expresión regular para buscar imágenes en formato Markdown
+        regex = r'!\[.*?\]\((.*?)\)'
+        
+        # Reemplazar el formato Markdown por una etiqueta <img>
+        processed_content = re.sub(regex, r'<br/><img src="\1" alt="Imagen" style="max-width: 400px; height: 400px; margin-top: 10px; border-radius: 15px;">', last_message.content)
+        
         return jsonify({
             'author': last_message.author,
-            'content': last_message.content,
+            'content': processed_content #last_message.content,
         })
     
     return render_template('chat.html', messages=user.messages, nombre=nombre, generos_preferidos=generos_preferidos, peliculas_favoritas=peliculas_favoritas, directores_favoritos=directores_favoritos, user_id=user_id)
