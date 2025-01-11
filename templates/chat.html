@@ -4,20 +4,20 @@
 {% block content %}
     {% include 'navbar.html' %}
 
-    <div class="container col-xxl-8 py-5">
+    <div class="container col-xxl-8 py-1 pt-5">
         <div id="messages">
         {% for message in messages %}
             {% if message.author == 'assistant' %}
                 <div class="d-flex flex-row justify-content-start mb-4">
                     <img src="{{ url_for('static', filename='pixelart_logo.png') }}" alt="avatar 1" style="width: 45px; height: 100%;">
                         <div class="p-3 ms-3" style="border-radius: 15px; background-color: rgba(57, 192, 237,.2);"> 
-                        <p class="mb-0">{{message.content}}</p>
+                        <p class="mb-0">{{message.content | safe }}</p>
                     </div>
                 </div>
             {% else %}
                 <div class="d-flex flex-row justify-content-end mb-4">
                     <div class="p-3 me-3 border bg-body-tertiary" style="border-radius: 15px;">
-                        <p class="mb-0">{{message.content}}</p>
+                        <p class="mb-0">{{message.content | safe }}</p>
                     </div>
               </div>
             {% endif %}
