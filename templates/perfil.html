@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Tu perfil
+{% endblock %}
+
+{% from 'bootstrap5/form.html' import render_form %}
+
+{% block content %}
+    {% include 'navbar.html' %}
+
+    <div class="container col-xxl-4 py-5">
+        <h1 class="mb-4 mt-0">Tu perfil</h1>
+        <div class="row justify-content-start">        
+            {{ render_form(form) }}
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="alert-container mt-4">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                    {{ message }}
+                    </div>
+                {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        <!-- Aquí se agregan los botones "Guardar" y "Volver al Chat" -->
+        <div class="d-flex justify-content-end mt-4">
+            <a href="{{ url_for('chat') }}" class="btn btn-secondary">Volver al chat</a>
+        </div>
+    </div>
+
+
+{% endblock %}
+
