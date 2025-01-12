@@ -18,9 +18,9 @@ function onLoad() {
         if (message.author === 'assistant') {
             messageHTML = `
                 <div class="d-flex flex-row justify-content-start mb-4">
-                    <img src="/static/pixelart_logo.png" alt="avatar 1" style="width: 80px; height: 100%;">
-                    <div class="p-3 ms-3 message-assistant" style="border-radius: 15px; background-color: rgba(57, 192, 237,.2);">
-                        <p class="small mb-0">${message.content}</p>
+                    <img src="/static/pixelart_logo.png" alt="avatar 1" style="width: 45px; height: 45px;">
+                    <div class="p-3 ms-3 message-assistant" style="border-radius: 15px; background-color: rgba(57, 192, 237,.2); font-size: 16px;">
+                        <p class="mb-0">${message.content}</p>
                     </div>
                 </div>
             `;

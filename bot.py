@@ -9,6 +9,7 @@ def build_prompt(user: User, context: str):
                     Debes proporcionar recomendaciones de manera breve, concisa y especializada, sin repetir nunca las sugerencias. 
                     Debes recordar el nombre del usuario ({user.nombre}), sus géneros preferidos ({user.generos_preferidos}), 
                     sus peliculas favoritas ({user.peliculas_favoritas}) y sus directores favoritos ({user.directores_favoritos}) todo el tiempo.
+                    Si vienen links, retornalos siempre en formato Markdown.
                     '''
 
     # Incluir preferencias del usuario

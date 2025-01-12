@@ -111,7 +111,7 @@ def chat():
     directores_favoritos = user.directores_favoritos or ""
 
     # print(f"El metodo es:{request.method}")
-    # print(f"Mensaje recibido: {request.form.get('message')}")
+    print(f"Mensaje recibido: {request.form.get('message')}")
     
 
     if request.method == 'GET':
@@ -139,7 +139,7 @@ def chat():
                     Debes proporcionar recomendaciones de manera breve, concisa y especializada, sin repetir nunca las sugerencias. 
                     Debes recordar el nombre del usuario ({nombre}), sus géneros preferidos ({generos_preferidos}), 
                     sus peliculas favoritas ({peliculas_favoritas}) y sus directores favoritos ({directores_favoritos}) todo el tiempo.
-                    Si vienen links a imagenes, retornalos siempre.
+                    Si vienen links, retornalos siempre en formato Markdown.
                     ''',
     }]
 
@@ -164,58 +164,17 @@ def chat():
             # Muchas veces viene el año despues de la pelicula, se ha notado que cuando viene el año no encuentra nada 
             # (o puede venir "de AÑO"), asi que lo removemos antes de la llamada
             nombre = re.sub(r'\s*(de\s*)?\b\d{4}\b$', '', arguments['name'], flags=re.IGNORECASE).strip()
-            #name = arguments['name']
             model_recommendation = where_to_watch(client, nombre, user)
-            # Expresión regular para buscar imágenes en formato Markdown
-            #regex = r'!\[.*?\]\((.*?)\)'
-            regex = r'\[(.*?)\]\((https?://.*?\.(?:png|jpg))\)' #r'\[(.*?)\]\((https?://.*?)\)'
-
-            # Reemplazar el formato Markdown por una etiqueta <img>
-            #processed_content = re.sub(regex, r'<br/><img src="\1" alt="Imagen" style="max-width: 400px; height: 400px; margin-top: 10px; border-radius: 15px;">', last_message.content)
-            model_recommendation=processed_text = re.sub(r'!\[', r'[', model_recommendation)
-            model_recommendation = re.sub(
-                regex, 
-                r'<br/><img src="\2" alt="\1" style="max-width: 400px; height: 400px; margin-top: 10px; border-radius: 15px;"><br/>', 
-                model_recommendation
-            )
         elif tool_call.function.name == 'search_movie_or_tv_show':
             arguments = json.loads(tool_call.function.arguments)
-            arguments = json.loads(tool_call.function.arguments)
             nombre = re.sub(r'\s*(de\s*)?\b\d{4}\b$', '', arguments['name'], flags=re.IGNORECASE).strip()
-            #name = arguments['name']
             model_recommendation = search_movie_or_tv_show(client, nombre, user)
-            # Expresión regular para buscar imágenes en formato Markdown
-            #regex = r'!\[.*?\]\((.*?)\)'
-            regex = r'\[(.*?)\]\((https?://.*?\.(?:png|jpg))\)' #r'\[(.*?)\]\((https?://.*?)\)'
-
-            # Reemplazar el formato Markdown por una etiqueta <img>
-            #processed_content = re.sub(regex, r'<br/><img src="\1" alt="Imagen" style="max-width: 400px; height: 400px; margin-top: 10px; border-radius: 15px;">', last_message.content)
-            model_recommendation=processed_text = re.sub(r'!\[', r'[', model_recommendation)
-            model_recommendation = re.sub(
-                regex, 
-                r'<br/><img src="\2" alt="\1" style="max-width: 400px; max-height: 400px; margin-top: 10px; border-radius: 15px;"><br/>', 
-                model_recommendation
-            )
         elif tool_call.function.name == 'search_company':
             arguments = json.loads(tool_call.function.arguments)
             name = arguments['name']
             model_recommendation = search_company(client, name, user)
-            # Expresión regular para buscar imágenes en formato Markdown
-            #regex = r'!\[.*?\]\((.*?)\)'
-            regex = r'\[(.*?)\]\((https?://.*?\.(?:png|jpg))\)' #r'\[(.*?)\]\((https?://.*?)\)'
-
-            # Reemplazar el formato Markdown por una etiqueta <img>
-            #processed_content = re.sub(regex, r'<br/><img src="\1" alt="Imagen" style="max-width: 400px; height: 400px; margin-top: 10px; border-radius: 15px;">', last_message.content)
-            model_recommendation=processed_text = re.sub(r'!\[', r'[', model_recommendation)
-            model_recommendation = re.sub(
-                regex, 
-                r'<br/><img src="\2" alt="\1" style="max-width: 400px; max-height: 400px; margin-top: 10px; border-radius: 15px;"><br/>', 
-                model_recommendation
-            )
-            
     else:
         model_recommendation = chat_completion.choices[0].message.content
-
 
     db.session.add(Message(content=model_recommendation, author="assistant", user=user))
     db.session.commit()
@@ -223,9 +182,39 @@ def chat():
     accept_header = request.headers.get('Accept')
     if accept_header and 'application/json' in accept_header:
         last_message = user.messages[-1]
+        
+        #ACA SE REEMPLAZAN LOS LINKS POR <img src... para poder ver las imagenes en el Chat
+
+        # Expresión regular para imágenes con `!`
+        image_regex_with_exclamation = r'!\[.*?\]\((.*?)\)'
+
+        # Expresión regular para imágenes sin `!`
+        image_regex_without_exclamation = r'\[.*?\]\((.*?)\)'
+        
+        processed_content=''
+
+        if re.search(image_regex_with_exclamation, last_message.content):
+            # Reemplazar formato Markdown con `!` por etiqueta <img>
+            processed_content = re.sub(
+                image_regex_with_exclamation, 
+                r'<br/><img src="\1" alt="Imagen" style="max-width: 400px; height: 400px; margin-top: 10px; border-radius: 15px;"><br/>', 
+                last_message.content
+            )
+        # Si no coincide con una imagen con `!`, intentamos con el formato sin `!`
+        elif re.search(image_regex_without_exclamation, last_message.content):
+            # Reemplazar formato Markdown sin `!` por etiqueta <img>
+            processed_content = re.sub(
+                image_regex_without_exclamation, 
+                r'<br/><img src="\1" alt="Imagen" style="max-width: 400px; height: 400px; margin-top: 10px; border-radius: 15px;"><br/>', 
+                last_message.content
+            )
+
+        # Reemplazar el formato Markdown por una etiqueta <img>
+        #processed_content = re.sub(regex, r'<br/><img src="\1" alt="Imagen" style="max-width: 400px; height: 400px; margin-top: 10px; border-radius: 15px;">', last_message.content)
+        
         return jsonify({
             'author': last_message.author,
-            'content': last_message.content,
+            'content': processed_content #last_message.content,
         })
     
     return render_template('chat.html', messages=user.messages, nombre=nombre, generos_preferidos=generos_preferidos, peliculas_favoritas=peliculas_favoritas, directores_favoritos=directores_favoritos, user_id=user_id)
