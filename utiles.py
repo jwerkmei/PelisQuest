@@ -18,7 +18,8 @@ def reemplazo_imagenes_y_links(texto):
         texto_modificado
     )
 
-    link_regex = r'\[([^\]]+)\]\((https?://(?!.*\.(?:png|jpg))([^\)]+))\)'
+    #link_regex = r'\[([^\]]+)\]\((https?://(?!.*\.(?:png|jpg))([^\)]+))\)'
+    link_regex =  r'\[([^\]]+)\]\((https?://(?!.*\.(?:png|jpg))([^ )]+))\)'
 
     # Reemplazar enlaces Markdown por etiquetas <a> en HTML
     texto_modificado = re.sub(link_regex, r'<a href="\2" target="_blank">\1</a>', texto_modificado)
