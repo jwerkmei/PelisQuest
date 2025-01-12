@@ -9,6 +9,7 @@ tmdb.API_KEY = getenv('TMDB_API_KEY')
 tmdb.REQUESTS_TIMEOUT = 5 
 
 def get_trailer_link(id_movie):
+    print("Buscando info acerca del trailer")
     #print(f"id_movie (llamada): {id_movie}")
     api_key=getenv('TMDB_API_KEY')
     # Define la URL y los encabezados
