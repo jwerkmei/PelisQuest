@@ -138,3 +138,20 @@ body {
     transform: translate(-50%, -50%);
 }
 .ldio-rpinwye8j0b div { box-sizing: content-box; }
+/* Estilos para el formulario */
+.form {
+    max-width: 500px; /* Ajusta el ancho del formulario */
+    margin: 0 auto; /* Centra el formulario */
+    background-color: #000; /* Fondo blanco para el formulario */
+    padding: 20px; /* Añade padding interno */
+    border-radius: 8px; /* Esquinas redondeadas */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+}
+
+/* Estilos para los campos de entrada */
+.form-control {
+    /*height: 45px; Altura más cómoda */
+    font-size: 1rem;
+    padding: 10px;
+    border-radius: 5px;
+}

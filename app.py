@@ -9,6 +9,7 @@ from forms import ProfileForm, SignUpForm, LoginForm
 from flask_wtf.csrf import CSRFProtect
 from os import getenv
 import json
+import utiles
 import re
 from bot import search_movie_or_tv_show, where_to_watch, search_company
 from flask_login import LoginManager, login_required, login_user, current_user, logout_user
@@ -166,53 +167,22 @@ def chat():
             nombre = re.sub(r'\s*(de\s*)?\b\d{4}\b$', '', arguments['name'], flags=re.IGNORECASE).strip()
             #name = arguments['name']
             model_recommendation = where_to_watch(client, nombre, user)
-            # Expresión regular para buscar imágenes en formato Markdown
-            #regex = r'!\[.*?\]\((.*?)\)'
-            regex = r'\[(.*?)\]\((https?://.*?\.(?:png|jpg))\)' #r'\[(.*?)\]\((https?://.*?)\)'
+            print(model_recommendation)
+            model_recommendation = utiles.reemplazo_imagenes_y_links(model_recommendation)
 
-            # Reemplazar el formato Markdown por una etiqueta <img>
-            #processed_content = re.sub(regex, r'<br/><img src="\1" alt="Imagen" style="max-width: 400px; height: 400px; margin-top: 10px; border-radius: 15px;">', last_message.content)
-            model_recommendation=processed_text = re.sub(r'!\[', r'[', model_recommendation)
-            model_recommendation = re.sub(
-                regex, 
-                r'<br/><img src="\2" alt="\1" style="max-width: 400px; height: 400px; margin-top: 10px; border-radius: 15px;"><br/>', 
-                model_recommendation
-            )
         elif tool_call.function.name == 'search_movie_or_tv_show':
-            arguments = json.loads(tool_call.function.arguments)
             arguments = json.loads(tool_call.function.arguments)
             nombre = re.sub(r'\s*(de\s*)?\b\d{4}\b$', '', arguments['name'], flags=re.IGNORECASE).strip()
             #name = arguments['name']
             model_recommendation = search_movie_or_tv_show(client, nombre, user)
-            # Expresión regular para buscar imágenes en formato Markdown
-            #regex = r'!\[.*?\]\((.*?)\)'
-            regex = r'\[(.*?)\]\((https?://.*?\.(?:png|jpg))\)' #r'\[(.*?)\]\((https?://.*?)\)'
+            model_recommendation = utiles.reemplazo_imagenes_y_links(model_recommendation)
 
-            # Reemplazar el formato Markdown por una etiqueta <img>
-            #processed_content = re.sub(regex, r'<br/><img src="\1" alt="Imagen" style="max-width: 400px; height: 400px; margin-top: 10px; border-radius: 15px;">', last_message.content)
-            model_recommendation=processed_text = re.sub(r'!\[', r'[', model_recommendation)
-            model_recommendation = re.sub(
-                regex, 
-                r'<br/><img src="\2" alt="\1" style="max-width: 400px; max-height: 400px; margin-top: 10px; border-radius: 15px;"><br/>', 
-                model_recommendation
-            )
         elif tool_call.function.name == 'search_company':
             arguments = json.loads(tool_call.function.arguments)
             name = arguments['name']
             model_recommendation = search_company(client, name, user)
-            # Expresión regular para buscar imágenes en formato Markdown
-            #regex = r'!\[.*?\]\((.*?)\)'
-            regex = r'\[(.*?)\]\((https?://.*?\.(?:png|jpg))\)' #r'\[(.*?)\]\((https?://.*?)\)'
+            model_recommendation = utiles.reemplazo_imagenes_y_links(model_recommendation)
 
-            # Reemplazar el formato Markdown por una etiqueta <img>
-            #processed_content = re.sub(regex, r'<br/><img src="\1" alt="Imagen" style="max-width: 400px; height: 400px; margin-top: 10px; border-radius: 15px;">', last_message.content)
-            model_recommendation=processed_text = re.sub(r'!\[', r'[', model_recommendation)
-            model_recommendation = re.sub(
-                regex, 
-                r'<br/><img src="\2" alt="\1" style="max-width: 400px; max-height: 400px; margin-top: 10px; border-radius: 15px;"><br/>', 
-                model_recommendation
-            )
-            
     else:
         model_recommendation = chat_completion.choices[0].message.content
 
