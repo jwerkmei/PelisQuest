@@ -7,12 +7,14 @@ import requests
 load_dotenv()
 tmdb.API_KEY = getenv('TMDB_API_KEY')
 tmdb.REQUESTS_TIMEOUT = 5 
-bearer = getenv('BEARER')
 
 def get_trailer_link(id_movie):
     print("Buscando info acerca del trailer")
     #print(f"id_movie (llamada): {id_movie}")
+    
     api_key=getenv('TMDB_API_KEY')
+    bearer = getenv('BEARER')
+
     # Define la URL y los encabezados
     url = f'https://api.themoviedb.org/3/movie/{id_movie}/videos?language=en-US'
     #print(f"URL: https://api.themoviedb.org/3/movie/{id_movie}/videos?language=en-US")
