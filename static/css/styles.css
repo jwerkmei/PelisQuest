@@ -23,6 +23,13 @@ body {
     height: auto;
 }
 
+img {
+    max-width: 400px;
+    max-height: 400px;
+    width: auto;
+    height: auto;
+}
+
 /* Estilo del título */
 .title {
     font-family: 'Port Lligat Slab', sans-serif;
@@ -155,3 +162,4 @@ body {
     padding: 10px;
     border-radius: 5px;
 }
+

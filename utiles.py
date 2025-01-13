@@ -5,6 +5,7 @@ def convertir_html(texto):
 
     #print(f"texto: "+texto)
     texto_modificado= markdown.markdown(texto)
+    
     #print(f"texto modificado: {texto_modificado}")
 
     # Expresión regular para buscar imágenes en formato Markdown
