@@ -43,6 +43,34 @@ def get_trailer_link(id_movie):
     #    print(f'Error {response.status_code}: {response.text}')
 
 
+def get_similar_movies(id_movie):
+    print("Buscando info acerca de peliculas similares")
+    #print(f"id_movie (llamada): {id_movie}")
+    
+    api_key=getenv('TMDB_API_KEY')
+
+    # Define la URL y los encabezados
+    url = f'https://api.themoviedb.org/3/movie/{id_movie}/similar?language=en-US&page=1&api_key={api_key}'
+    #print(f"URL: https://api.themoviedb.org/3/movie/762509/similar?language=en-US&page=1&api_key={api_key}")
+    headers = {
+            'accept': 'application/json'
+    }
+
+    response = requests.get(url, headers=headers)
+
+    similares=''
+    # Comprueba si la solicitud fue exitosa
+    if response.status_code == 200:
+        data=response.json()
+        #print(data)
+        for movie in data['results'][:5]:  # Tomar solo los primeros 5 elementos
+            title = movie['original_title']
+            release_year = movie['release_date'].split('-')[0]  # Tomar solo el año
+            print(f"Title: {title}, Year: {release_year}")
+            similares += f"Title: {title}, Year: {release_year} ; "
+
+    return similares
+
 #Usa TMDB
 def search(movie_name):
     search = tmdb.Search()
@@ -58,10 +86,16 @@ def search(movie_name):
     print(f"El id de la pelicula es: {movie_info['id']}")
     trailer_link=get_trailer_link(movie_info['id'])
     #print(f"trailer_link: {trailer_link}")
-    #agregamos el link del trailer al diccionario
-    movie_info['trailer_link'] = trailer_link
-    print(f"resultados post: {movie_info}")
 
+    #Obtenemos el link del trailer y los agregamos al diccionario como "trailer_link"
+    movie_info['trailer_link'] = trailer_link
+
+    #Obtenemos las peliculas similares y las agregamos al diccionario como "similar_movies"
+    similares=get_similar_movies(movie_info['id'])
+    movie_info['similar_movies'] = similares
+
+    print(f"resultados post: {movie_info}")
+    
     return movie_info
 
 #Usa TMDB
