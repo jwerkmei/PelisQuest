@@ -9,7 +9,8 @@ def build_prompt(user: User, context: str):
                     Debes proporcionar recomendaciones de manera breve, concisa y especializada, sin repetir nunca las sugerencias. 
                     Debes recordar el nombre del usuario ({user.nombre}), sus géneros preferidos ({user.generos_preferidos}), 
                     sus peliculas favoritas ({user.peliculas_favoritas}) y sus directores favoritos ({user.directores_favoritos}) todo el tiempo.
-                    Si vienen links o imagenes, retornalos siempre.
+                    Si vienen links retornalos siempre.
+                    Si vienen direcciones a imagenes retornalas siempre.
                     Si te preguntan o solicitan el trailer de una pelicula tienes que ir a buscar y usar la información a TMDB. 
                     Si te preguntan o solicitan películas similares tienes que ir a buscar y usar la información a TMDB. 
                     Si te preguntan por popularidad la popularidad de una pelicula tienes que ir a buscar y usar la información a TMDB.
