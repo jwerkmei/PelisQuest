@@ -169,20 +169,20 @@ def chat():
             #name = arguments['name']
             model_recommendation = where_to_watch(client, nombre, user)
             print(model_recommendation)
-            model_recommendation = utiles.reemplazo_imagenes_y_links(model_recommendation)
+            model_recommendation = utiles.convertir_html(model_recommendation)
 
         elif tool_call.function.name == 'search_movie_or_tv_show':
             arguments = json.loads(tool_call.function.arguments)
             nombre = re.sub(r'\s*(de\s*)?\b\d{4}\b$', '', arguments['name'], flags=re.IGNORECASE).strip()
             #name = arguments['name']
             model_recommendation = search_movie_or_tv_show(client, nombre, user)
-            model_recommendation = utiles.reemplazo_imagenes_y_links(model_recommendation)
+            model_recommendation = utiles.convertir_html(model_recommendation)
 
         elif tool_call.function.name == 'search_company':
             arguments = json.loads(tool_call.function.arguments)
             name = arguments['name']
             model_recommendation = search_company(client, name, user)
-            model_recommendation = utiles.reemplazo_imagenes_y_links(model_recommendation)
+            model_recommendation = utiles.convertir_html(model_recommendation)
 
     else:
         model_recommendation = chat_completion.choices[0].message.content
