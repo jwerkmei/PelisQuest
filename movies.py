@@ -8,6 +8,31 @@ load_dotenv()
 tmdb.API_KEY = getenv('TMDB_API_KEY')
 tmdb.REQUESTS_TIMEOUT = 5 
 
+#Función específica para obtener premios
+def get_movie_awards_and_scores(movie_title):
+
+    api_key=getenv('OMDB_API_KEY')
+
+    print(f"Buscando awards y scores de: {movie_title}")
+    url = f"http://www.omdbapi.com/?t={movie_title}&apikey={api_key}"
+
+    awards_and_scores={}
+    try:
+        response = requests.get(url)
+        data = response.json()
+        #print(f"data: {data}")
+        if data.get('Response') == 'True':
+            awards_and_scores= {
+                'year': data.get('Year'),
+                'awards': data.get('Awards', 'No hay información de premios'),
+                'imdbRating': data.get('imdbRating', 'N/A'),
+                'metascore': data.get('Metascore', 'N/A')
+            }
+    except Exception as e:
+        print(f"Error al buscar información de premios: {str(e)}")
+
+    return awards_and_scores
+
 def get_trailer_link(id_movie):
     print("Buscando info acerca del trailer")
     #print(f"id_movie (llamada): {id_movie}")
@@ -83,6 +108,19 @@ def search(movie_name):
     movie_info=search.results[0]
     print(f"resultados antes: {movie_info}")
 
+    #Agregamos la info de awards y scores al diccionario, buscamos por nombre original
+    if 'original_title' in movie_info and movie_info['original_title']:
+        print(f"El titulo de la pelicula es: {movie_info['original_title']}")
+        # Llamar a la función solo si 'original_title' tiene un valor
+        new_info = get_movie_awards_and_scores(movie_info['original_title'])
+    
+        # Si la función devuelve un diccionario, actualizamos movie_info
+        if isinstance(new_info, dict):
+            movie_info.update(new_info)
+
+    #movie_info.update(get_movie_awards_and_scores(movie_info['original_title']))
+
+
     print(f"El id de la pelicula es: {movie_info['id']}")
     trailer_link=get_trailer_link(movie_info['id'])
     #print(f"trailer_link: {trailer_link}")
@@ -95,7 +133,7 @@ def search(movie_name):
     movie_info['similar_movies'] = similares
 
     print(f"resultados post: {movie_info}")
-    
+
     return movie_info
 
 #Usa TMDB
